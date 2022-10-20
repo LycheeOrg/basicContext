@@ -44,15 +44,6 @@ All of these APIs are capable of being polyfilled in older browser. Check the li
 
 ## Setup
 
-We recommend to install basicContext using [Bower](http://bower.io/) or [npm](https://npmjs.com).
-
-```sh
-bower install basicContext
-```
-```sh
-npm install basiccontext
-```
-
 Include the CSS-files in the `head` and the JS-file at the end of your `body`:
 
 ```html
