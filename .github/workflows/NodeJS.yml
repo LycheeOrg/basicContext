@@ -1,0 +1,37 @@
+name: Node.js CI
+
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+
+      - name: Install
+        run: npm install
+
+      - name: Check Style
+        run: npm run check-formatting
+
+      - name: Build
+        run: npm run compile
+
+      - name: Install Git
+        run: apt install git
+
+      - name: Check changes
+        run: git diff || false # exit if there are any changes

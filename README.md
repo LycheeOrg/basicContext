@@ -9,21 +9,21 @@ Easy-to-use context-menu for your website or web-app.
 - [Requirements](#requirements)
 - [Setup](#setup)
 - [How to use](#how-to-use)
-	- [Vanilla JS](#vanilla-js)
-	- [jQuery](#jquery)
+  - [Vanilla JS](#vanilla-js)
+  - [jQuery](#jquery)
 - [Themes](#themes)
 - [Addons](#addons)
 
 ## Demos
 
-| Name | Description | Link |
-|:-----------|:------------|:------------|
-| Basic demo | basicContext works with all kind of events | [Try it on CodePen](http://codepen.io/electerious/pen/emaJxE) |
-| Position demo | basicContext never leaves the visible screen-area | [Try it on CodePen](http://codepen.io/electerious/pen/GJqrZN) |
-| Scroll demo | basicContext is scrollable when the context height is bigger than the browser height | [Try it on CodePen](http://codepen.io/electerious/pen/aOZpZr) |
-| Custom close function demo | basicContext lets you define a custom close function | [Try it on CodePen](http://codepen.io/electerious/pen/MwpVdE) |
-| Custom position demo | basicContext accepts an object with custom coordinates | [Try it on CodePen](http://codepen.io/electerious/pen/PqjMrN) |
-| jQuery demo | Use basicContext with the jQuery [Event Object](http://api.jquery.com/category/events/event-object/) | [Demo](demos/jQuery.html) |
+| Name                       | Description                                                                                          | Link                                                          |
+| :------------------------- | :--------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+| Basic demo                 | basicContext works with all kind of events                                                           | [Try it on CodePen](http://codepen.io/electerious/pen/emaJxE) |
+| Position demo              | basicContext never leaves the visible screen-area                                                    | [Try it on CodePen](http://codepen.io/electerious/pen/GJqrZN) |
+| Scroll demo                | basicContext is scrollable when the context height is bigger than the browser height                 | [Try it on CodePen](http://codepen.io/electerious/pen/aOZpZr) |
+| Custom close function demo | basicContext lets you define a custom close function                                                 | [Try it on CodePen](http://codepen.io/electerious/pen/MwpVdE) |
+| Custom position demo       | basicContext accepts an object with custom coordinates                                               | [Try it on CodePen](http://codepen.io/electerious/pen/PqjMrN) |
+| jQuery demo                | Use basicContext with the jQuery [Event Object](http://api.jquery.com/category/events/event-object/) | [Demo](demos/jQuery.html)                                     |
 
 ## Features
 
@@ -47,9 +47,10 @@ All of these APIs are capable of being polyfilled in older browser. Check the li
 Include the CSS-files in the `head` and the JS-file at the end of your `body`:
 
 ```html
-<link rel="stylesheet" href="dist/basicContext.min.css">
-<link rel="stylesheet" href="dist/themes/default.min.css">
+<link rel="stylesheet" href="dist/basicContext.min.css" />
+<link rel="stylesheet" href="dist/themes/default.min.css" />
 ```
+
 ```html
 <script src="dist/basicContext.min.js"></script>
 ```
@@ -57,7 +58,7 @@ Include the CSS-files in the `head` and the JS-file at the end of your `body`:
 Skip the JS-file if you want to use basicContext as module together with [Browserify](http://browserify.org):
 
 ```js
-let basicContext = require('basiccontext')
+let basicContext = require("basiccontext");
 ```
 
 ## How to use
@@ -67,21 +68,29 @@ let basicContext = require('basiccontext')
 Show a context-menu by using the following command:
 
 ```js
-document.querySelector('.btn').addEventListener('click', function(e) {
+document.querySelector(".btn").addEventListener("click", function (e) {
+  let items = [
+    { title: "Add Sites", icon: "ion-plus-round", fn: clicked },
+    { title: "Reset Login", icon: "ion-person", fn: clicked },
+    { title: "Help", icon: "ion-help-buoy", fn: clicked },
+    {
+      title: "Disabled",
+      icon: "ion-minus-circled",
+      fn: clicked,
+      disabled: true,
+    },
+    {
+      title: "Invisible",
+      icon: "ion-eye-disabled",
+      fn: clicked,
+      visible: false,
+    },
+    {},
+    { title: "Logout", icon: "ion-log-out", fn: clicked },
+  ];
 
-	let items = [
-		{ title: 'Add Sites', icon: 'ion-plus-round', fn: clicked },
-		{ title: 'Reset Login', icon: 'ion-person', fn: clicked },
-		{ title: 'Help', icon: 'ion-help-buoy', fn: clicked },
-		{ title: 'Disabled', icon: 'ion-minus-circled', fn: clicked, disabled: true },
-		{ title: 'Invisible', icon: 'ion-eye-disabled', fn: clicked, visible: false },
-		{ },
-		{ title: 'Logout', icon: 'ion-log-out', fn: clicked }
-	]
-
-	basicContext.show(items, e)
-
-})
+  basicContext.show(items, e);
+});
 ```
 
 ### jQuery
@@ -89,38 +98,46 @@ document.querySelector('.btn').addEventListener('click', function(e) {
 basicContext doesn't work properly with the normalized jQuery [Event Object](http://api.jquery.com/category/events/event-object/), but you can easily bypass this issue using `e.originalEvent`:
 
 ```js
-$('.btn').on('click', function(e) {
+$(".btn").on("click", function (e) {
+  let items = [
+    { title: "Add Sites", icon: "ion-plus-round", fn: clicked },
+    { title: "Reset Login", icon: "ion-person", fn: clicked },
+    { title: "Help", icon: "ion-help-buoy", fn: clicked },
+    {
+      title: "Disabled",
+      icon: "ion-minus-circled",
+      fn: clicked,
+      disabled: true,
+    },
+    {
+      title: "Invisible",
+      icon: "ion-eye-disabled",
+      fn: clicked,
+      visible: false,
+    },
+    {},
+    { title: "Logout", icon: "ion-log-out", fn: clicked },
+  ];
 
-	let items = [
-		{ title: 'Add Sites', icon: 'ion-plus-round', fn: clicked },
-		{ title: 'Reset Login', icon: 'ion-person', fn: clicked },
-		{ title: 'Help', icon: 'ion-help-buoy', fn: clicked },
-		{ title: 'Disabled', icon: 'ion-minus-circled', fn: clicked, disabled: true },
-		{ title: 'Invisible', icon: 'ion-eye-disabled', fn: clicked, visible: false },
-		{ },
-		{ title: 'Logout', icon: 'ion-log-out', fn: clicked }
-	]
-
-	basicContext.show(items, e.originalEvent)
-
-})
+  basicContext.show(items, e.originalEvent);
+});
 ```
 
 ## Themes
 
 Layout and theme are separated CSS-files. This makes it easy to style your own context or to choose from the included themes.
 
-| Name | CSS-File | Demo |
-|:-----------|:------------|:------------|
+| Name          | CSS-File                                | Demo                              |
+| :------------ | :-------------------------------------- | :-------------------------------- |
 | Default theme | [CSS-File](dist/themes/default.min.css) | [Demo](demos/themes/default.html) |
-| Bright theme | [CSS-File](dist/themes/bright.min.css) | [Demo](demos/themes/bright.html) |
-| Dark theme | [CSS-File](dist/themes/dark.min.css) | [Demo](demos/themes/dark.html) |
+| Bright theme  | [CSS-File](dist/themes/bright.min.css)  | [Demo](demos/themes/bright.html)  |
+| Dark theme    | [CSS-File](dist/themes/dark.min.css)    | [Demo](demos/themes/dark.html)    |
 
 ## Addons
 
 Include the following CSS-files to enhance the look and functionality of your contexts.
 
-| Name | CSS-File | Demo |
-|:-----------|:------------|:------------|
-| PopIn effect | [CSS-File](dist/addons/popin.min.css) | [Demo](demos/addons/popIn.html) |
+| Name          | CSS-File                               | Demo                             |
+| :------------ | :------------------------------------- | :------------------------------- |
+| PopIn effect  | [CSS-File](dist/addons/popin.min.css)  | [Demo](demos/addons/popIn.html)  |
 | FadeIn effect | [CSS-File](dist/addons/fadein.min.css) | [Demo](demos/addons/fadeIn.html) |

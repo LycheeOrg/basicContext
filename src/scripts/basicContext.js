@@ -84,7 +84,7 @@ const build = function(items) {
 	            <div class='basicContext'>
 	                <table>
 	                    <tbody>
-	        `
+	        `;
 
 	items.forEach((item, i) => html += buildItem(item, i))
 
@@ -93,7 +93,7 @@ const build = function(items) {
 	                </table>
 	            </div>
 	        </div>
-	        `
+	        `;
 
 	return html
 
