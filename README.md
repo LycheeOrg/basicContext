@@ -2,8 +2,6 @@
 
 Easy-to-use context-menu for your website or web-app.
 
-<img src="http://l.electerious.com/uploads/big/36cc8c250d72a11f92df380595260c37.png" width="257" />
-
 ## Contents
 
 - [Demos](#demos)
@@ -121,17 +119,17 @@ $('.btn').on('click', function(e) {
 
 Layout and theme are separated CSS-files. This makes it easy to style your own context or to choose from the included themes.
 
-| Name | Preview | CSS-File | Demo |
-|:-----------|:------------|:------------|:------------|
-| Default theme | <img src="http://l.electerious.com/uploads/big/36cc8c250d72a11f92df380595260c37.png" width="257" /> | [CSS-File](dist/themes/default.min.css) | [Demo](demos/themes/default.html) |
-| Bright theme | <img src="http://l.electerious.com/uploads/big/f337c41832ac37cd49c3bd6898b85d5e.png" width="257" /> | [CSS-File](dist/themes/bright.min.css) | [Demo](demos/themes/bright.html) |
-| Dark theme | <img src="http://l.electerious.com/uploads/big/f0cc0ba23effc0443f367ca63dd1e72f.png" width="257" /> | [CSS-File](dist/themes/dark.min.css) | [Demo](demos/themes/dark.html) |
+| Name | CSS-File | Demo |
+|:-----------|:------------|:------------|
+| Default theme | [CSS-File](dist/themes/default.min.css) | [Demo](demos/themes/default.html) |
+| Bright theme | [CSS-File](dist/themes/bright.min.css) | [Demo](demos/themes/bright.html) |
+| Dark theme | [CSS-File](dist/themes/dark.min.css) | [Demo](demos/themes/dark.html) |
 
 ## Addons
 
 Include the following CSS-files to enhance the look and functionality of your contexts.
 
-| Name | Preview | CSS-File | Demo |
-|:-----------|:------------|:------------|:------------|
-| PopIn effect | <img src="http://l.electerious.com/uploads/big/c506f4fedb8a4df691d276d6abdb75f7.gif" width="257" /> | [CSS-File](dist/addons/popin.min.css) | [Demo](demos/addons/popIn.html) |
-| FadeIn effect | <img src="http://l.electerious.com/uploads/big/1b98e17f1af051753a958c18953adbd5.gif" width="257" /> | [CSS-File](dist/addons/fadein.min.css) | [Demo](demos/addons/fadeIn.html) |
+| Name | CSS-File | Demo |
+|:-----------|:------------|:------------|
+| PopIn effect | [CSS-File](dist/addons/popin.min.css) | [Demo](demos/addons/popIn.html) |
+| FadeIn effect | [CSS-File](dist/addons/fadein.min.css) | [Demo](demos/addons/fadeIn.html) |
