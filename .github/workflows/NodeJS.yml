@@ -30,8 +30,7 @@ jobs:
       - name: Build
         run: npm run compile
 
-      - name: Install Git
-        run: apt install git
-
       - name: Check changes
-        run: git diff || false # exit if there are any changes
+        run: |
+          sudo apt install git
+          git diff || false # exit if there are any changes
