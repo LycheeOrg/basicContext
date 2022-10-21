@@ -4,13 +4,6 @@ var name = require("./package.json").moduleName,
   plugins = require("gulp-load-plugins")();
 sass = require("gulp-sass")(require("sass"));
 
-var head = fs.readFileSync("./node_modules/@electerious/modulizer/head.js", {
-    encoding: "utf8",
-  }),
-  foot = fs.readFileSync("./node_modules/@electerious/modulizer/foot.js", {
-    encoding: "utf8",
-  });
-
 var catchError = function (err) {
   console.log(err.toString());
   this.emit("end");
@@ -56,8 +49,6 @@ gulp.task("styles", function () {
 gulp.task("scripts", function () {
   return gulp
     .src("./src/scripts/*.js")
-    .pipe(plugins.header(head, { name: name }))
-    .pipe(plugins.footer(foot))
     .pipe(plugins.babel())
     .on("error", catchError)
     .pipe(plugins.concat(name + ".min.js", { newLine: "\n" }))
