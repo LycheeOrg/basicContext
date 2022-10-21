@@ -52,11 +52,7 @@ gulp.task("addons", function () {
 		.src("./src/styles/addons/*.scss")
 		.pipe(sass())
 		.on("error", catchError)
-		.pipe(
-			rename((path) => {
-				path.basename = path.basename + ".min";
-			})
-		)
+		.pipe(rename((path) => (path.basename = path.basename + ".min")))
 		.pipe(autoprefixer("last 2 version", "> 1%"))
 		.pipe(csso({ restructure: false }))
 		.pipe(gulp.dest("./dist/addons"));
@@ -67,11 +63,7 @@ gulp.task("themes", function () {
 		.src("./src/styles/themes/*.scss")
 		.pipe(sass())
 		.on("error", catchError)
-		.pipe(
-			rename((path) => {
-				path.basename = path.basename + ".min";
-			})
-		)
+		.pipe(rename((path) => (path.basename = path.basename + ".min")))
 		.pipe(autoprefixer("last 2 version", "> 1%"))
 		.pipe(csso({ restructure: false }))
 		.pipe(gulp.dest("./dist/themes"));

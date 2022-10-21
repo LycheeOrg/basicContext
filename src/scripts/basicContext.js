@@ -49,14 +49,14 @@ const buildItem = function (item, num) {
 	// Generate item
 	if (item.type === ITEM) {
 		html = `
-				 <tr class='basicContext__item ${item.class}'>
-						 <td class='basicContext__data' data-num='${item.num}'>${span}${item.title}</td>
-				 </tr>
+			<tr class='basicContext__item ${item.class}'>
+				<td class='basicContext__data' data-num='${item.num}'>${span}${item.title}</td>
+			</tr>
 				 `;
 	} else if (item.type === SEPARATOR) {
 		html = `
-				 <tr class='basicContext__item basicContext__item--separator'></tr>
-				 `;
+			<tr class='basicContext__item basicContext__item--separator'></tr>
+		`;
 	}
 
 	return html;
@@ -66,20 +66,20 @@ const build = function (items) {
 	let html = "";
 
 	html += `
-				<div class='basicContextContainer'>
-						<div class='basicContext'>
-								<table>
-										<tbody>
-				`;
+		<div class='basicContextContainer'>
+			<div class='basicContext'>
+				<table>
+					<tbody>
+	`;
 
 	items.forEach((item, i) => (html += buildItem(item, i)));
 
 	html += `
-										</tbody>
-								</table>
-						</div>
-				</div>
-				`;
+					</tbody>
+				</table>
+			</div>
+		</div>
+	`;
 
 	return html;
 };
