@@ -1,264 +1,239 @@
-let overflow = null
+let overflow = null;
 
-const ITEM      = 'item',
-      SEPARATOR = 'separator'
+const ITEM = "item",
+  SEPARATOR = "separator";
 
-const dom = function(elem = '') {
+const dom = function (elem = "") {
+  return document.querySelector(".basicContext " + elem);
+};
 
-	return document.querySelector('.basicContext ' + elem)
+const valid = function (item = {}) {
+  let emptyItem = Object.keys(item).length === 0 ? true : false;
 
-}
+  if (emptyItem === true) item.type = SEPARATOR;
+  if (item.type == null) item.type = ITEM;
+  if (item.class == null) item.class = "";
+  if (item.visible !== false) item.visible = true;
+  if (item.icon == null) item.icon = null;
+  if (item.title == null) item.title = "Undefined";
 
-const valid = function(item = {}) {
+  // Add disabled class when item disabled
+  if (item.disabled !== true) item.disabled = false;
+  if (item.disabled === true) item.class += " basicContext__item--disabled";
 
-	let emptyItem = (Object.keys(item).length===0 ? true : false)
+  // Item requires a function when
+  // it's not a separator and not disabled
+  if (item.fn == null && item.type !== SEPARATOR && item.disabled === false) {
+    console.warn(`Missing fn for item '${item.title}'`);
+    return false;
+  }
 
-	if (emptyItem===true)     item.type    = SEPARATOR
-	if (item.type==null)      item.type    = ITEM
-	if (item.class==null)     item.class   = ''
-	if (item.visible!==false) item.visible = true
-	if (item.icon==null)      item.icon    = null
-	if (item.title==null)     item.title   = 'Undefined'
+  return true;
+};
 
-	// Add disabled class when item disabled
-	if (item.disabled!==true) item.disabled = false
-	if (item.disabled===true) item.class += ' basicContext__item--disabled'
+const buildItem = function (item, num) {
+  let html = "",
+    span = "";
 
-	// Item requires a function when
-	// it's not a separator and not disabled
-	if (item.fn==null && item.type!==SEPARATOR && item.disabled===false) {
+  // Parse and validate item
+  if (valid(item) === false) return "";
 
-		console.warn(`Missing fn for item '${ item.title }'`)
-		return false
+  // Skip when invisible
+  if (item.visible === false) return "";
 
-	}
+  // Give item a unique number
+  item.num = num;
 
-	return true
+  // Generate span/icon-element
+  if (item.icon !== null)
+    span = `<span class='basicContext__icon ${item.icon}'></span>`;
 
-}
-
-const buildItem = function(item, num) {
-
-	let html = '',
-	    span = ''
-
-	// Parse and validate item
-	if (valid(item)===false) return ''
-
-	// Skip when invisible
-	if (item.visible===false) return ''
-
-	// Give item a unique number
-	item.num = num
-
-	// Generate span/icon-element
-	if (item.icon!==null) span = `<span class='basicContext__icon ${ item.icon }'></span>`
-
-	// Generate item
-	if (item.type===ITEM) {
-
-		html = `
-		       <tr class='basicContext__item ${ item.class }'>
-		           <td class='basicContext__data' data-num='${ item.num }'>${ span }${ item.title }</td>
+  // Generate item
+  if (item.type === ITEM) {
+    html = `
+		       <tr class='basicContext__item ${item.class}'>
+		           <td class='basicContext__data' data-num='${item.num}'>${span}${item.title}</td>
 		       </tr>
-		       `
-
-	} else if (item.type===SEPARATOR) {
-
-		html = `
+		       `;
+  } else if (item.type === SEPARATOR) {
+    html = `
 		       <tr class='basicContext__item basicContext__item--separator'></tr>
-		       `
+		       `;
+  }
 
-	}
+  return html;
+};
 
-	return html
+const build = function (items) {
+  let html = "";
 
-}
-
-const build = function(items) {
-
-	let html = ''
-
-	html += `
+  html += `
 	        <div class='basicContextContainer'>
 	            <div class='basicContext'>
 	                <table>
 	                    <tbody>
 	        `;
 
-	items.forEach((item, i) => html += buildItem(item, i))
+  items.forEach((item, i) => (html += buildItem(item, i)));
 
-	html += `
+  html += `
 	                    </tbody>
 	                </table>
 	            </div>
 	        </div>
 	        `;
 
-	return html
+  return html;
+};
 
-}
+const getNormalizedEvent = function (e = {}) {
+  let pos = {
+    x: e.clientX,
+    y: e.clientY,
+  };
 
-const getNormalizedEvent = function(e = {}) {
+  if (e.type === "touchend" && (pos.x == null || pos.y == null)) {
+    // We need to capture clientX and clientY from original event
+    // when the event 'touchend' does not return the touch position
 
-	let pos = {
-		x : e.clientX,
-		y : e.clientY
-	}
+    let touches = e.changedTouches;
 
-	if (e.type==='touchend' && (pos.x==null || pos.y==null)) {
+    if (touches != null && touches.length > 0) {
+      pos.x = touches[0].clientX;
+      pos.y = touches[0].clientY;
+    }
+  }
 
-		// We need to capture clientX and clientY from original event
-		// when the event 'touchend' does not return the touch position
+  // Position unknown
+  if (pos.x == null || pos.x < 0) pos.x = 0;
+  if (pos.y == null || pos.y < 0) pos.y = 0;
 
-		let touches = e.changedTouches
+  return pos;
+};
 
-		if (touches!=null&&touches.length>0) {
-			pos.x = touches[0].clientX
-			pos.y = touches[0].clientY
-		}
+const getPosition = function (e, context) {
+  // Get the click position
+  let normalizedEvent = getNormalizedEvent(e);
 
-	}
+  // Set the initial position
+  let x = normalizedEvent.x,
+    y = normalizedEvent.y;
 
-	// Position unknown
-	if (pos.x==null || pos.x < 0) pos.x = 0
-	if (pos.y==null || pos.y < 0) pos.y = 0
+  // Get size of browser
+  let browserSize = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
 
-	return pos
+  // Get size of context
+  let contextSize = {
+    width: context.offsetWidth,
+    height: context.offsetHeight,
+  };
 
-}
+  // Fix position based on context and browser size
+  if (x + contextSize.width > browserSize.width)
+    x = x - (x + contextSize.width - browserSize.width);
+  if (y + contextSize.height > browserSize.height)
+    y = y - (y + contextSize.height - browserSize.height);
 
-const getPosition = function(e, context) {
+  // Make context scrollable and start at the top of the browser
+  // when context is higher than the browser
+  if (contextSize.height > browserSize.height) {
+    y = 0;
+    context.classList.add("basicContext--scrollable");
+  }
 
-	// Get the click position
-	let normalizedEvent = getNormalizedEvent(e)
+  // Calculate the relative position of the mouse to the context
+  let rx = normalizedEvent.x - x,
+    ry = normalizedEvent.y - y;
 
-	// Set the initial position
-	let x = normalizedEvent.x,
-	    y = normalizedEvent.y
+  return { x, y, rx, ry };
+};
 
-	// Get size of browser
-	let browserSize = {
-		width  : window.innerWidth,
-		height : window.innerHeight
-	}
+const bind = function (item = {}) {
+  if (item.fn == null) return false;
+  if (item.visible === false) return false;
+  if (item.disabled === true) return false;
 
-	// Get size of context
-	let contextSize = {
-		width  : context.offsetWidth,
-		height : context.offsetHeight
-	}
+  dom(`td[data-num='${item.num}']`).onclick = item.fn;
+  dom(`td[data-num='${item.num}']`).oncontextmenu = item.fn;
 
-	// Fix position based on context and browser size
-	if ((x + contextSize.width) > browserSize.width)   x = x - ((x + contextSize.width) - browserSize.width)
-	if ((y + contextSize.height) > browserSize.height) y = y - ((y + contextSize.height) - browserSize.height)
+  return true;
+};
 
-	// Make context scrollable and start at the top of the browser
-	// when context is higher than the browser
-	if (contextSize.height > browserSize.height) {
-		y = 0
-		context.classList.add('basicContext--scrollable')
-	}
+const show = function (items, e, fnClose, fnCallback) {
+  // Build context
+  let html = build(items);
 
-	// Calculate the relative position of the mouse to the context
-	let rx = normalizedEvent.x - x,
-	    ry = normalizedEvent.y - y
+  // Add context to the body
+  document.body.insertAdjacentHTML("beforeend", html);
 
-	return { x, y, rx, ry }
+  // Save current overflow and block scrolling of site
+  if (overflow == null) {
+    overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
 
-}
+  // Cache the context
+  let context = dom();
 
-const bind = function(item = {}) {
+  // Calculate position
+  let position = getPosition(e, context);
 
-	if (item.fn==null)        return false
-	if (item.visible===false) return false
-	if (item.disabled===true) return false
+  // Set position
+  context.style.left = `${position.x}px`;
+  context.style.top = `${position.y}px`;
+  context.style.transformOrigin = `${position.rx}px ${position.ry}px`;
+  context.style.opacity = 1;
 
-	dom(`td[data-num='${ item.num }']`).onclick       = item.fn
-	dom(`td[data-num='${ item.num }']`).oncontextmenu = item.fn
+  // Close fn fallback
+  if (fnClose == null) fnClose = close;
 
-	return true
+  // Bind click on background
+  context.parentElement.onclick = fnClose;
+  context.parentElement.oncontextmenu = fnClose;
 
-}
+  // Bind click on items
+  items.forEach(bind);
 
-const show = function(items, e, fnClose, fnCallback) {
+  // Do not trigger default event or further propagation
+  if (typeof e.preventDefault === "function") e.preventDefault();
+  if (typeof e.stopPropagation === "function") e.stopPropagation();
 
-	// Build context
-	let html = build(items)
+  // Call callback when a function
+  if (typeof fnCallback === "function") fnCallback();
 
-	// Add context to the body
-	document.body.insertAdjacentHTML('beforeend', html)
+  return true;
+};
 
-	// Save current overflow and block scrolling of site
-	if (overflow==null) {
-		overflow = document.body.style.overflow
-		document.body.style.overflow = 'hidden'
-	}
+const visible = function () {
+  let elem = dom();
 
-	// Cache the context
-	let context = dom()
+  if (elem == null || elem.length === 0) return false;
+  else return true;
+};
 
-	// Calculate position
-	let position = getPosition(e, context)
+const close = function () {
+  if (visible() === false) return false;
 
-	// Set position
-	context.style.left            = `${ position.x }px`
-	context.style.top             = `${ position.y }px`
-	context.style.transformOrigin = `${ position.rx }px ${ position.ry }px`
-	context.style.opacity         = 1
+  let container = document.querySelector(".basicContextContainer");
 
-	// Close fn fallback
-	if (fnClose==null) fnClose = close
+  container.parentElement.removeChild(container);
 
-	// Bind click on background
-	context.parentElement.onclick       = fnClose
-	context.parentElement.oncontextmenu = fnClose
+  // Reset overflow to its original value
+  if (overflow != null) {
+    document.body.style.overflow = overflow;
+    overflow = null;
+  }
 
-	// Bind click on items
-	items.forEach(bind)
-
-	// Do not trigger default event or further propagation
-	if (typeof e.preventDefault === 'function')  e.preventDefault()
-	if (typeof e.stopPropagation === 'function') e.stopPropagation()
-
-	// Call callback when a function
-	if (typeof fnCallback === 'function') fnCallback()
-
-	return true
-
-}
-
-const visible = function() {
-
-	let elem = dom()
-
-	if (elem==null || elem.length===0) return false
-	else                               return true
-
-}
-
-const close = function() {
-
-	if (visible()===false) return false
-
-	let container = document.querySelector('.basicContextContainer')
-
-	container.parentElement.removeChild(container)
-
-	// Reset overflow to its original value
-	if (overflow!=null) {
-		document.body.style.overflow = overflow
-		overflow = null
-	}
-
-	return true
-
-}
+  return true;
+};
 
 return {
-	ITEM,
-	SEPARATOR,
-	show,
-	visible,
-	close
-}
+  ITEM,
+  SEPARATOR,
+  show,
+  visible,
+  close,
+};
