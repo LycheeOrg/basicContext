@@ -3,7 +3,8 @@
   "moduleName": "basicContext",
   "version": "3.5.1",
   "authors": [
-    "Tobias Reich <tobias@electerious.com>"
+    "Tobias Reich <tobias@electerious.com>",
+    "The Lychee Organization"
   ],
   "description": "Easy-to-use context-menu for your website or webapp",
   "main": "src/scripts/basicContext.js",
@@ -19,10 +20,10 @@
     "format": "prettier --write ."
   },
   "license": "MIT",
-  "homepage": "http://github.com/electerious/basicContext",
+  "homepage": "http://github.com/LycheeOrg/basicContext",
   "repository": {
     "type": "git",
-    "url": "https://github.com/electerious/basicContext.git"
+    "url": "https://github.com/LycheeOrg/basicContext.git"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
