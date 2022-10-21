@@ -29,6 +29,3 @@ jobs:
 
       - name: Build
         run: npm run compile
-
-      - name: Check changes
-        run: git diff # exit if there are any changes
