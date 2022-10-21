@@ -1,74 +1,75 @@
-var name = require("./package.json").moduleName,
-	fs = require("fs"),
-	gulp = require("gulp"),
-	plugins = require("gulp-load-plugins")();
-sass = require("gulp-sass")(require("sass"));
+"use strict";
 
-var head = fs.readFileSync("./node_modules/@electerious/modulizer/head.js", {
-		encoding: "utf8",
-	}),
-	foot = fs.readFileSync("./node_modules/@electerious/modulizer/foot.js", {
-		encoding: "utf8",
-	});
+const name = require("./package.json").moduleName;
+const gulp = require("gulp");
+const browserify = require("browserify");
+const babelify = require("babelify");
+const source = require("vinyl-source-stream");
+const buffer = require("vinyl-buffer");
+const uglify = require("gulp-uglify");
+const sass = require("gulp-sass")(require("sass"));
+const rename = require("gulp-rename");
+const autoprefixer = require("gulp-autoprefixer");
+const csso = require("gulp-csso");
 
-var catchError = function (err) {
+const catchError = function (err) {
 	console.log(err.toString());
 	this.emit("end");
 };
 
-gulp.task("styles", function () {
-	gulp
-		.src("./src/styles/main.scss")
-		.pipe(sass().on("error", catchError))
-		.on("error", catchError)
-		.pipe(plugins.concat(name + ".min.css", { newLine: "\n" }))
-		.pipe(plugins.autoprefixer("last 2 version", "> 1%"))
-		.pipe(plugins.minifyCss())
-		.pipe(gulp.dest("./dist"));
-
-	gulp
-		.src("./src/styles/themes/*.scss")
-		.pipe(sass().on("error", catchError))
-		.on("error", catchError)
-		.pipe(
-			plugins.rename(function (path) {
-				path.basename += ".min";
+gulp.task("scripts", function () {
+	return browserify({
+		entries: "./src/scripts/basicContext.js",
+		standalone: name,
+	})
+		.transform(
+			babelify.configure({
+				presets: ["@babel/preset-env"],
 			})
 		)
-		.pipe(plugins.autoprefixer("last 2 version", "> 1%"))
-		.pipe(plugins.minifyCss())
-		.pipe(gulp.dest("./dist/themes"));
+		.bundle()
+		.on("error", catchError)
+		.pipe(source(name + ".min.js"))
+		.pipe(buffer())
+		.pipe(uglify())
+		.on("error", catchError)
+		.pipe(gulp.dest("./dist"));
+});
 
+gulp.task("styles", function () {
+	return gulp
+		.src("./src/styles/main.scss")
+		.pipe(sass())
+		.on("error", catchError)
+		.pipe(rename((path) => (path.basename = name + ".min")))
+		.pipe(autoprefixer("last 2 version", "> 1%"))
+		.pipe(csso({ restructure: false }))
+		.pipe(gulp.dest("./dist"));
+});
+
+gulp.task("addons", function () {
 	return gulp
 		.src("./src/styles/addons/*.scss")
-		.pipe(sass().on("error", catchError))
+		.pipe(sass())
 		.on("error", catchError)
-		.pipe(
-			plugins.rename(function (path) {
-				path.basename += ".min";
-			})
-		)
-		.pipe(plugins.autoprefixer("last 2 version", "> 1%"))
-		.pipe(plugins.minifyCss())
+		.pipe(rename((path) => (path.basename = path.basename + ".min")))
+		.pipe(autoprefixer("last 2 version", "> 1%"))
+		.pipe(csso({ restructure: false }))
 		.pipe(gulp.dest("./dist/addons"));
 });
 
-gulp.task("scripts", function () {
+gulp.task("themes", function () {
 	return gulp
-		.src("./src/scripts/*.js")
-		.pipe(plugins.header(head, { name: name }))
-		.pipe(plugins.footer(foot))
-		.pipe(plugins.babel())
+		.src("./src/styles/themes/*.scss")
+		.pipe(sass())
 		.on("error", catchError)
-		.pipe(plugins.concat(name + ".min.js", { newLine: "\n" }))
-		.pipe(plugins.uglify())
-		.on("error", catchError)
-		.pipe(gulp.dest("./dist"));
+		.pipe(rename((path) => (path.basename = path.basename + ".min")))
+		.pipe(autoprefixer("last 2 version", "> 1%"))
+		.pipe(csso({ restructure: false }))
+		.pipe(gulp.dest("./dist/themes"));
 });
 
-gulp.task("default", gulp.series(gulp.parallel("styles", "scripts")));
-
-gulp.task("watch", gulp.series("default"), function () {
-	gulp.watch("./src/styles/**/*.scss", ["styles"]);
-	gulp.watch("./src/scripts/**/*.js", ["scripts"]);
-});
+gulp.task(
+	"default",
+	gulp.series(gulp.parallel("scripts", "styles", "addons", "themes"))
+);

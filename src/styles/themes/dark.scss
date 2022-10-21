@@ -30,8 +30,11 @@
 		color: white;
 	}
 
-	&__item:not(.basicContext__item--disabled):hover &__data {
-		background-color: $basicContext__color;
+	// restrict hover features to devices that support it
+	@media (hover: hover) {
+		.basicContext__item:not(.basicContext__item--disabled):hover &__data {
+			background-color: $basicContext__color;
+		}
 	}
 
 	&__item:not(.basicContext__item--disabled):active &__data {

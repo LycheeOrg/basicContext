@@ -1,7 +1,5 @@
-let overflow = null;
-
-const ITEM = "item",
-	SEPARATOR = "separator";
+export const ITEM = "item";
+export const SEPARATOR = "separator";
 
 const dom = function (elem = "") {
 	return document.querySelector(".basicContext " + elem);
@@ -51,14 +49,14 @@ const buildItem = function (item, num) {
 	// Generate item
 	if (item.type === ITEM) {
 		html = `
-		       <tr class='basicContext__item ${item.class}'>
-		           <td class='basicContext__data' data-num='${item.num}'>${span}${item.title}</td>
-		       </tr>
-		       `;
+			<tr class='basicContext__item ${item.class}'>
+				<td class='basicContext__data' data-num='${item.num}'>${span}${item.title}</td>
+			</tr>
+				 `;
 	} else if (item.type === SEPARATOR) {
 		html = `
-		       <tr class='basicContext__item basicContext__item--separator'></tr>
-		       `;
+			<tr class='basicContext__item basicContext__item--separator'></tr>
+		`;
 	}
 
 	return html;
@@ -68,20 +66,20 @@ const build = function (items) {
 	let html = "";
 
 	html += `
-	        <div class='basicContextContainer'>
-	            <div class='basicContext'>
-	                <table>
-	                    <tbody>
-	        `;
+		<div class='basicContextContainer'>
+			<div class='basicContext'>
+				<table>
+					<tbody>
+	`;
 
 	items.forEach((item, i) => (html += buildItem(item, i)));
 
 	html += `
-	                    </tbody>
-	                </table>
-	            </div>
-	        </div>
-	        `;
+					</tbody>
+				</table>
+			</div>
+		</div>
+	`;
 
 	return html;
 };
@@ -119,10 +117,12 @@ const getPosition = function (e, context) {
 	let x = normalizedEvent.x,
 		y = normalizedEvent.y;
 
+	let container = document.querySelector(".basicContextContainer");
+
 	// Get size of browser
 	let browserSize = {
-		width: window.innerWidth,
-		height: window.innerHeight,
+		width: container.offsetWidth,
+		height: container.offsetHeight,
 	};
 
 	// Get size of context
@@ -162,18 +162,12 @@ const bind = function (item = {}) {
 	return true;
 };
 
-const show = function (items, e, fnClose, fnCallback) {
+export const show = function (items, e, fnClose, fnCallback) {
 	// Build context
 	let html = build(items);
 
 	// Add context to the body
 	document.body.insertAdjacentHTML("beforeend", html);
-
-	// Save current overflow and block scrolling of site
-	if (overflow == null) {
-		overflow = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-	}
 
 	// Cache the context
 	let context = dom();
@@ -207,33 +201,18 @@ const show = function (items, e, fnClose, fnCallback) {
 	return true;
 };
 
-const visible = function () {
+export const visible = function () {
 	let elem = dom();
 
-	if (elem == null || elem.length === 0) return false;
-	else return true;
+	return !(elem == null || elem.length === 0);
 };
 
-const close = function () {
+export const close = function () {
 	if (visible() === false) return false;
 
 	let container = document.querySelector(".basicContextContainer");
 
 	container.parentElement.removeChild(container);
 
-	// Reset overflow to its original value
-	if (overflow != null) {
-		document.body.style.overflow = overflow;
-		overflow = null;
-	}
-
 	return true;
-};
-
-return {
-	ITEM,
-	SEPARATOR,
-	show,
-	visible,
-	close,
 };
