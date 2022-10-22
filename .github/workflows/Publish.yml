@@ -16,5 +16,5 @@ jobs:
       - run: npm install
       - run: npm publish --access public
         env:
-          # Access token for NPM registry for @qwerty287's account.
+          # (Name, value)-pairs for access tokens are configured at https://github.com/LycheeOrg/basicContext/settings/secrets/actions
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
