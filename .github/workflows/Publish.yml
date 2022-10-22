@@ -16,4 +16,5 @@ jobs:
       - run: npm install
       - run: npm publish --access public
         env:
+          # (Name, value)-pairs for access tokens are configured at https://github.com/LycheeOrg/basicContext/settings/secrets/actions
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
