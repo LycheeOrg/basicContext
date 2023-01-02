@@ -31,7 +31,7 @@ const valid = function (item = {}) {
 
 const buildItem = function (item, num) {
 	let html = "",
-		span = "";
+		icon = "";
 
 	// Parse and validate item
 	if (valid(item) === false) return "";
@@ -44,13 +44,16 @@ const buildItem = function (item, num) {
 
 	// Generate span/icon-element
 	if (item.icon !== null)
-		span = `<span class='basicContext__icon ${item.icon}'></span>`;
+		icon = `<span class='basicContext__icon'>${item.icon}</span>`;
 
 	// Generate item
 	if (item.type === ITEM) {
 		html = `
 			<tr class='basicContext__item ${item.class}'>
-				<td class='basicContext__data' data-num='${item.num}'>${span}${item.title}</td>
+				<td class='basicContext__data' data-num='${item.num}'>
+					${icon}
+					<span class='basicContext__title'>${item.title}</span>
+				</td>
 			</tr>
 				 `;
 	} else if (item.type === SEPARATOR) {
@@ -84,73 +87,6 @@ const build = function (items) {
 	return html;
 };
 
-const getNormalizedEvent = function (e = {}) {
-	let pos = {
-		x: e.clientX,
-		y: e.clientY,
-	};
-
-	if (e.type === "touchend" && (pos.x == null || pos.y == null)) {
-		// We need to capture clientX and clientY from original event
-		// when the event 'touchend' does not return the touch position
-
-		let touches = e.changedTouches;
-
-		if (touches != null && touches.length > 0) {
-			pos.x = touches[0].clientX;
-			pos.y = touches[0].clientY;
-		}
-	}
-
-	// Position unknown
-	if (pos.x == null || pos.x < 0) pos.x = 0;
-	if (pos.y == null || pos.y < 0) pos.y = 0;
-
-	return pos;
-};
-
-const getPosition = function (e, context) {
-	// Get the click position
-	let normalizedEvent = getNormalizedEvent(e);
-
-	// Set the initial position
-	let x = normalizedEvent.x,
-		y = normalizedEvent.y;
-
-	let container = document.querySelector(".basicContextContainer");
-
-	// Get size of browser
-	let browserSize = {
-		width: container.offsetWidth,
-		height: container.offsetHeight,
-	};
-
-	// Get size of context
-	let contextSize = {
-		width: context.offsetWidth,
-		height: context.offsetHeight,
-	};
-
-	// Fix position based on context and browser size
-	if (x + contextSize.width > browserSize.width)
-		x = x - (x + contextSize.width - browserSize.width);
-	if (y + contextSize.height > browserSize.height)
-		y = y - (y + contextSize.height - browserSize.height);
-
-	// Make context scrollable and start at the top of the browser
-	// when context is higher than the browser
-	if (contextSize.height > browserSize.height) {
-		y = 0;
-		context.classList.add("basicContext--scrollable");
-	}
-
-	// Calculate the relative position of the mouse to the context
-	let rx = normalizedEvent.x - x,
-		ry = normalizedEvent.y - y;
-
-	return { x, y, rx, ry };
-};
-
 const bind = function (item = {}) {
 	if (item.fn == null) return false;
 	if (item.visible === false) return false;
@@ -171,15 +107,6 @@ export const show = function (items, e, fnClose, fnCallback) {
 
 	// Cache the context
 	let context = dom();
-
-	// Calculate position
-	let position = getPosition(e, context);
-
-	// Set position
-	context.style.left = `${position.x}px`;
-	context.style.top = `${position.y}px`;
-	context.style.transformOrigin = `${position.rx}px ${position.ry}px`;
-	context.style.opacity = 1;
 
 	// Close fn fallback
 	if (fnClose == null) fnClose = close;
